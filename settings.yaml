@@ -1,0 +1,10 @@
+dataset:
+    path: "dataset"
+    num_sample: 256
+    sample:
+        dim: [256, 256]
+        color: "black"
+
+        rectangle:
+            color: "white"
+            dim: [75, 30]
