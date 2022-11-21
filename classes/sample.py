@@ -3,6 +3,7 @@ from typing import Iterable, Tuple, Dict
 from PIL import Image, ImageDraw
 
 from classes.settings_loader import Settings_Loader
+from classes.boundingbox import BoundingBox
 
 class Sample:
     
@@ -13,18 +14,17 @@ class Sample:
     [4]------[2]
     """
 
-    def __init__(self, endpoints:Iterable[Tuple[int, int]], sample_settings:Dict):
+    def __init__(self, boundingbox:BoundingBox, sample_settings:Dict):
 
-        self.endpoints = [
-            endpoints[0],
-            (endpoints[1][0], endpoints[0][1]),
-            endpoints[1],
-            (endpoints[0][0], endpoints[1][1])
-        ]
+        self.boundingbox = boundingbox
+        self.settings = sample_settings
 
         self.image = Image.new("RGB", sample_settings['dim'], sample_settings['color'])
         self.drawer = ImageDraw.Draw(self.image)
-        self.drawer.rectangle(endpoints, fill=sample_settings['rectangle']['color'])
+    
+    def draw(self):
+        list_points = [tuple(point.coordinates) for point in self.boundingbox.points]
+        self.drawer.polygon(list_points, fill=self.settings['polygon']['color'])
 
     
     def save_image(self, directory, name):

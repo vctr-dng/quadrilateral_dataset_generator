@@ -5,6 +5,6 @@ dataset:
         dim: [256, 256]
         color: "black"
 
-        rectangle:
+        polygon:
             color: "white"
             dim: [75, 30]
