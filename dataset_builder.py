@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 import random
 import json
+import csv
 
 from classes.sample import Sample
 from classes.settings_loader import Settings_Loader
@@ -55,9 +56,28 @@ def generate_dataset():
         sample.draw()
         sample.save_image(dataset_directory, i)
 
-        meta_data[str(i)] = [points.toJSON() for points in boundingbox.points]
+        meta_data[str(i)] = boundingbox
 
+    '''points.toJSON() for points in boundingbox.points'''
+    json_data = {f'{key}.{sample_settings["extension"]}': boundingbox.toJSON() for key, boundingbox in meta_data.items()}
     jsonfile = open(dataset_directory/'meta_data.json', 'w')
-    json.dump(meta_data, jsonfile, indent=4)
+    json.dump(json_data, jsonfile, indent=4)
+    jsonfile.close()
+
+
+    csv_data = []
+    for key, boundingbox in meta_data.items():
+        unpacked_coordinates = []
+        for point in boundingbox.points:
+            unpacked_coordinates += point.coordinates
+        
+        row = [f'{key}.{sample_settings["extension"]}'] + unpacked_coordinates
+
+        csv_data.append(row)
+    csvfile = open(dataset_directory/'meta_data.csv', 'w')
+    csv_writer = csv.writer(csvfile, delimiter=',')
+    csv_writer.writerows(csv_data)
+    csvfile.close()
+            
 
 generate_dataset()

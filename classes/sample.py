@@ -28,4 +28,4 @@ class Sample:
 
     
     def save_image(self, directory, name):
-        self.image.save(directory/f'{name}.png', 'PNG')
+        self.image.save(directory/f'{name}.{self.settings["extension"]}', self.settings['extension'])

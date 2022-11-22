@@ -1,7 +1,9 @@
 dataset:
     path: "dataset"
-    num_sample: 256
+    num_sample: 5
     sample:
+        extension: "PNG"
+
         dim: [256, 256]
         color: "black"
 

@@ -12,4 +12,4 @@ class Point:
         pass
 
     def toJSON(self):
-        return json.dumps(self.coordinates)
+        return self.coordinates
