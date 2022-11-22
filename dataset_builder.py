@@ -10,6 +10,7 @@ from classes.sample import Sample
 from classes.settings_loader import Settings_Loader
 from classes.boundingbox import BoundingBox
 from classes.point import Point
+from classes.dataset import RectangleDataset
 
 import conf_setup
 
@@ -58,7 +59,6 @@ def generate_dataset():
 
         meta_data[str(i)] = boundingbox
 
-    '''points.toJSON() for points in boundingbox.points'''
     json_data = {f'{key}.{sample_settings["extension"]}': boundingbox.toJSON() for key, boundingbox in meta_data.items()}
     jsonfile = open(dataset_directory/'meta_data.json', 'w')
     json.dump(json_data, jsonfile, indent=4)
@@ -78,6 +78,8 @@ def generate_dataset():
     csv_writer = csv.writer(csvfile, delimiter=',')
     csv_writer.writerows(csv_data)
     csvfile.close()
-            
+
+    rectangle_ds = RectangleDataset(str(dataset_directory/'meta_data.csv'), dataset_settings)
+    print(rectangle_ds.__getitem__(0)['label'])
 
 generate_dataset()

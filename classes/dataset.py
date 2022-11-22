@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from pathlib import Path
@@ -21,12 +22,13 @@ class RectangleDataset(Dataset):
         return len(self.img_labels)
     
     def __getitem__(self, idx):
-        img_name = self.img_labels[idx, 0]
-        img_path = Path(self.settings.path)/img_name
-        img = read_image(img_path)
+        img_name = self.img_labels.iloc[idx, 0]
+        img_path = Path(self.settings['path'])/img_name
+        img = read_image(str(img_path))
 
-        label = np.array(self.img_labels[idx, 1:])
-        label = reduction(self.img_labels[idx, 1:], dataset_settings['sample']['dim'])
+        label = np.array([self.img_labels.iloc[idx, 1:]], dtype='float')
+        print(label)
+        label = self.reduction(label, self.settings['sample']['dim'])
 
         if self.transform:
             img = transform(img)
@@ -36,11 +38,16 @@ class RectangleDataset(Dataset):
         
         return {'image': img, 'label': label}
     
-    def reduction(label, img_size):
-        reduced_label = []
+    def reduction(self, label, img_size):
+        reduced_label = np.zeros_like(label)
+        nbr_dim = len(img_size)
 
-        nbr_dim = len(img_dim)
-        #TODO: handle len(label)//nbr_dim = len(label)//nbr_dim case
+        #TODO: handle len(label)%nbr_dim = len(label)%nbr_dim case != 0
 
-        for i in range(len(label)//nbr_dim):
-            point = label[i*nbr_dim : (i+1)*nbr_dim]
+        for i in range(label.shape[-1]//nbr_dim):
+            point = label[:, i*nbr_dim : (i+1)*nbr_dim]
+            reduced_point = point/img_size
+            print(point, img_size, reduced_point)
+            reduced_label[:, i*nbr_dim : (i+1)*nbr_dim] = reduced_point
+        
+        return reduced_label
