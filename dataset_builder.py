@@ -11,6 +11,7 @@ from classes.settings_loader import Settings_Loader
 from classes.boundingbox import BoundingBox
 from classes.point import Point
 from classes.dataset import RectangleDataset
+from classes.random_rectangle import Random_Rectangle
 
 import conf_setup
 
@@ -41,17 +42,8 @@ def generate_dataset():
     meta_data = {}
     
     for i in range(dataset_settings['num_sample']):
-        randx1, randx2 = random_linked_integer(0)
-        randy1, randy2 = random_linked_integer(1)
 
-        boundingbox = BoundingBox(
-            [
-                Point([randx1, randy1]),
-                Point([randx2, randy1]),
-                Point([randx2, randy2]),
-                Point([randx1, randy2])
-            ]
-        )
+        boundingbox = BoundingBox(Random_Rectangle.generate(sample_settings['dim'], sample_settings['polygon']['dim']))
 
         sample = Sample(boundingbox, sample_settings)
         sample.draw()
@@ -59,12 +51,13 @@ def generate_dataset():
 
         meta_data[str(i)] = boundingbox
 
+    # JSON metadata
     json_data = {f'{key}.{sample_settings["extension"]}': boundingbox.toJSON() for key, boundingbox in meta_data.items()}
     jsonfile = open(dataset_directory/'meta_data.json', 'w')
     json.dump(json_data, jsonfile, indent=4)
     jsonfile.close()
 
-
+    # CSV metadata
     csv_data = []
     for key, boundingbox in meta_data.items():
         unpacked_coordinates = []
@@ -79,7 +72,9 @@ def generate_dataset():
     csv_writer.writerows(csv_data)
     csvfile.close()
 
-    rectangle_ds = RectangleDataset(str(dataset_directory/'meta_data.csv'), dataset_settings)
-    print(rectangle_ds.__getitem__(0)['label'])
+    """ rectangle_ds = RectangleDataset(str(dataset_directory/'meta_data.csv'), dataset_settings)
+    print(rectangle_ds.__getitem__(0)['label']) """
+
+    
 
 generate_dataset()

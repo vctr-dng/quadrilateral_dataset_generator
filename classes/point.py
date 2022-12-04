@@ -1,10 +1,12 @@
 import json
 
+from typing import List
+
 class Point:
 
     coordinates = []
 
-    def __init__(self, coordinates):
+    def __init__(self, coordinates:List):
         self.coordinates = coordinates
 
     def distanceToOrigin(self):
