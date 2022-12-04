@@ -1,6 +1,6 @@
 dataset:
     path: "dataset"
-    num_sample: 5
+    num_sample: 20
     sample:
         extension: "PNG"
 

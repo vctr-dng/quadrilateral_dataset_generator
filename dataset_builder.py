@@ -39,7 +39,7 @@ def random_linked_integer(axis:int):
     return integer1, integer2
 
 def generate_dataset():
-    meta_data = {}
+    metadata = {}
     
     for i in range(dataset_settings['num_sample']):
 
@@ -49,17 +49,17 @@ def generate_dataset():
         sample.draw()
         sample.save_image(dataset_directory, i)
 
-        meta_data[str(i)] = boundingbox
+        metadata[str(i)] = boundingbox
 
     # JSON metadata
-    json_data = {f'{key}.{sample_settings["extension"]}': boundingbox.toJSON() for key, boundingbox in meta_data.items()}
-    jsonfile = open(dataset_directory/'meta_data.json', 'w')
+    json_data = {f'{key}.{sample_settings["extension"]}': boundingbox.toJSON() for key, boundingbox in metadata.items()}
+    jsonfile = open(dataset_directory/'metadata.json', 'w')
     json.dump(json_data, jsonfile, indent=4)
     jsonfile.close()
 
     # CSV metadata
-    csv_data = []
-    for key, boundingbox in meta_data.items():
+    csv_data = [sample_settings['dim']]
+    for key, boundingbox in metadata.items():
         unpacked_coordinates = []
         for point in boundingbox.points:
             unpacked_coordinates += point.coordinates
@@ -67,14 +67,14 @@ def generate_dataset():
         row = [f'{key}.{sample_settings["extension"]}'] + unpacked_coordinates
 
         csv_data.append(row)
-    csvfile = open(dataset_directory/'meta_data.csv', 'w')
+    csvfile = open(dataset_directory/'metadata.csv', 'w')
     csv_writer = csv.writer(csvfile, delimiter=',')
     csv_writer.writerows(csv_data)
     csvfile.close()
 
-    """ rectangle_ds = RectangleDataset(str(dataset_directory/'meta_data.csv'), dataset_settings)
+    """ rectangle_ds = RectangleDataset(str(dataset_directory/'metadata.csv'), dataset_settings)
     print(rectangle_ds.__getitem__(0)['label']) """
 
-    
+
 
 generate_dataset()
